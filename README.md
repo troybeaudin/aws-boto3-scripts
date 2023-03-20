@@ -44,3 +44,25 @@ Run script after edit
 ```
 python3 ec2_imds.py
 ```
+
+## drs_recover_tag.py
+This script will recover any replicated servers in Elastic Disaster Recovery (DRS) based on the tag key and value provided.
+
+#Edit script as needed
+
+```python
+#Provide the tag key and value to get the Source Server IDs based on the tags
+servers = get_tag('Application','Test')
+#Run the recover_server function to recover the servers returned from the get_tag function
+recover_server(servers)
+```
+Run script after edit
+
+```
+python3 drs_recover_tag.py
+```
+
+## drs_ebs_check.py
+This script will compare the amount of replicated disks per server in DRS to the number of EBS volumes attached to the source server. If they don't match, it will run an SSM command to reinstall the agent to allow for the new volume to be replicated.
+
+This is to be used with Install-DRSAgent.yml, which is to be deployed as an SSM Command document.

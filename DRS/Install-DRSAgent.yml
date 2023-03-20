@@ -1,0 +1,31 @@
+---
+schemaVersion: "2.2"
+description: "Installs Windows DRS Agent"
+parameters:
+  executionTimeout:
+    type: "String"
+    default: "18000"
+    description: "Execution Timeout in Seconds"
+mainSteps:
+- action: "aws:runPowerShellScript"
+  name: "Install-DRSAgent"
+  precondition:
+    StringEquals:
+      - "platformType"
+      - "Windows"  
+  inputs:
+    runCommand:
+    - "$file = \"AwsReplicationWindowsInstaller.exe\""
+    - "$folder = \"C:\\TEMP\\\""
+    - "$arglist = @(\"--region us-east-1\", \"--no-prompt\")"
+    - "$region = \"us-east-1\""
+    - "$fullpath = $folder + $file"
+    - "if(-not(Test-Path -Path $folder)){"
+    - "New-Item -ItemType Directory -Path $folder"
+    - "}"
+    - "if(Test-Path -Path $fullpath){"
+    - "Remove-Item -Path $fullpath"
+    - "}"
+    - "Invoke-WebRequest -Uri \"https://aws-elastic-disaster-recovery-${region}.s3.${region}.amazonaws.com/latest/windows/AwsReplicationWindowsInstaller.exe\" -OutFile $fullpath"
+    - "Start-Process -Wait -FilePath $fullpath -ArgumentList $arglist"
+    - "Remove-Item -Path $fullpath"
